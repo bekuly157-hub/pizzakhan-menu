@@ -47,7 +47,6 @@
   .pay-cash{font-size:15px;line-height:1.7;}
   /* Hide checkout fields we don't need */
   .ec-form__cell--name { display: none !important; }
-  .ec-tabs { display: none !important; }
   .ec-cart-step__section-title { display: none !important; }
   .ec-form__title { display: none !important; }
 </style>
@@ -237,25 +236,30 @@ function cleanupCheckout() {
     el.style.display = 'none';
   });
 
-  // 2. Auto-select "Самовывоз" and hide the tile
+  // 2. Auto-select "Самовывоз" tab then hide it
+  var pickupClicked = false;
   document.querySelectorAll('.ec-tabs__tab').forEach(function(tab) {
     var txt = tab.textContent.trim();
-    if (txt === 'Самовывоз' && !tab.classList.contains('ec-tabs__tab--active')) {
-      tab.click();
-    }
-    // Hide both delivery tabs completely
-    if (txt === 'Доставка по адресу' || txt === 'Самовывоз') {
+    if (txt === 'Доставка по адресу') {
       tab.style.display = 'none';
     }
-  });
-  // Hide the whole tabs block (the tile row)
-  document.querySelectorAll('.ec-tabs, .ec-tabs__wrap').forEach(function(el) {
-    el.style.display = 'none';
-  });
-  // Hide "Выберите, как хотите получить заказ" label
-  document.querySelectorAll('.ec-cart-step__section').forEach(function(el) {
-    if (el.textContent.includes('Выберите, как хотите получить заказ')) {
-      el.style.display = 'none';
+    if (txt === 'Самовывоз' && !pickupClicked) {
+      pickupClicked = true;
+      // Click it if not already active
+      if (!tab.classList.contains('ec-tabs__tab--active')) {
+        tab.click();
+      }
+      // Hide the whole tabs block after click settles
+      setTimeout(function() {
+        var tabs = tab.closest('.ec-tabs, .ec-tabs__wrap');
+        if (tabs) tabs.style.display = 'none';
+        // Also hide the "Выберите как хотите получить заказ" text
+        document.querySelectorAll('.ec-cart-step__section').forEach(function(s) {
+          if (s.textContent.includes('Выберите') && !s.querySelector('.ec-form__row--continue')) {
+            s.style.display = 'none';
+          }
+        });
+      }, 400);
     }
   });
 
