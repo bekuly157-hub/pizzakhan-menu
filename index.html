@@ -233,14 +233,25 @@ function cleanupCheckout() {
     el.style.display = 'none';
   });
 
-  // 2. Auto-click "Самовывоз" tile on the address step
+  // 2. Auto-select "Самовывоз" and hide the tile
   document.querySelectorAll('.ec-tabs__tab').forEach(function(tab) {
-    if (tab.textContent.trim() === 'Самовывоз' && !tab.classList.contains('ec-tabs__tab--active')) {
+    var txt = tab.textContent.trim();
+    if (txt === 'Самовывоз' && !tab.classList.contains('ec-tabs__tab--active')) {
       tab.click();
     }
-    // Hide "Доставка по адресу" tab
-    if (tab.textContent.trim() === 'Доставка по адресу') {
+    // Hide both delivery tabs completely
+    if (txt === 'Доставка по адресу' || txt === 'Самовывоз') {
       tab.style.display = 'none';
+    }
+  });
+  // Hide the whole tabs block (the tile row)
+  document.querySelectorAll('.ec-tabs, .ec-tabs__wrap').forEach(function(el) {
+    el.style.display = 'none';
+  });
+  // Hide "Выберите, как хотите получить заказ" label
+  document.querySelectorAll('.ec-cart-step__section').forEach(function(el) {
+    if (el.textContent.includes('Выберите, как хотите получить заказ')) {
+      el.style.display = 'none';
     }
   });
 
@@ -252,8 +263,12 @@ function cleanupCheckout() {
     nameInput.dispatchEvent(new Event('input', {bubbles: true}));
     nameInput.dispatchEvent(new Event('change', {bubbles: true}));
     nameFilled = true;
-    var cell = nameInput.closest('.ec-form__cell--name');
-    if (cell) cell.style.display = 'none';
+  }
+  // Hide name row always
+  var nameInput2 = document.getElementById('ec-full-name');
+  if (nameInput2) {
+    var nameRow = nameInput2.closest('.ec-form__row');
+    if (nameRow) nameRow.style.display = 'none';
   }
 
   // 4. Phone — fill and hide
@@ -264,10 +279,11 @@ function cleanupCheckout() {
     phoneInput.dispatchEvent(new Event('input', {bubbles: true}));
     phoneInput.dispatchEvent(new Event('change', {bubbles: true}));
     phoneFilled = true;
-    var phoneCell = phoneInput.closest('.ec-form__cell, .form-control');
-    if (phoneCell) phoneCell.style.display = 'none';
-    // Also hide the label
-    var phoneRow = phoneInput.closest('.ec-form__row');
+  }
+  // Hide phone row always
+  var phoneInput2 = document.getElementById('ec-phone');
+  if (phoneInput2) {
+    var phoneRow = phoneInput2.closest('.ec-form__row');
     if (phoneRow) phoneRow.style.display = 'none';
   }
 
@@ -276,16 +292,7 @@ function cleanupCheckout() {
     el.style.display = 'none';
   });
 
-  // 6. Hide "Введите свою контактную информацию" label if no fields visible
-  document.querySelectorAll('.ec-form__row').forEach(function(row) {
-    if (row.style.display === 'none') return;
-    var inputs = row.querySelectorAll('input');
-    var allHidden = true;
-    inputs.forEach(function(i) { if (i.offsetParent !== null) allHidden = false; });
-    if (inputs.length > 0 && allHidden) row.style.display = 'none';
-  });
-
-  // 7. Rename button
+  // 6. Rename button
   document.querySelectorAll('.form-control__button-text').forEach(function(s) {
     if (s.textContent.trim() === 'Разместить заказ') s.textContent = 'Готовить!';
   });
