@@ -166,18 +166,17 @@
   var ecwidReady = false;
   var pendingCatId = null;
 
+  // Инициализируем Ecwid сразу — чтобы корзина работала всегда
+  xProductBrowser("categoriesPerRow=2","views=grid(20,3) list(60) table(60)","categoryView=grid","searchView=list","id=my-store-7841010");
+
   function khanOpenCat(catId) {
     document.getElementById('khanHome').style.display = 'none';
     document.getElementById('khanStore').style.display = 'block';
-    document.getElementById('backBtn').style.display = 'inline-flex';
     window.scrollTo(0,0);
     if (ecwidReady) {
       Ecwid.openPage('category', {id: catId});
     } else {
       pendingCatId = catId;
-      if (!ecwidReady) {
-        xProductBrowser("categoriesPerRow=2","views=grid(20,3) list(60) table(60)","categoryView=grid","searchView=list","id=my-store-7841010");
-      }
     }
   }
 
