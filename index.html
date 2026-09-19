@@ -214,8 +214,7 @@ var emailFilled = false;
 var nameFilled = false;
 
 function cleanupCheckout() {
-  // Email — fill value but hide only the input form, NOT the whole step
-  // (hiding the whole step makes the checkout button disappear)
+  // Email — fill and auto-click "Оформить заказ" button
   var emailInput = document.getElementById('ec-cart-email-input');
   if (emailInput && !emailFilled) {
     var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
@@ -223,15 +222,13 @@ function cleanupCheckout() {
     emailInput.dispatchEvent(new Event('input', {bubbles: true}));
     emailInput.dispatchEvent(new Event('change', {bubbles: true}));
     emailFilled = true;
-    // Hide only the input form, not the whole block
-    var form = emailInput.closest('form');
-    if (form) form.style.display = 'none';
+    // Auto-click submit button after short delay
+    setTimeout(function() {
+      var btn = document.querySelector('.ec-cart-step--email button.form-control__button, .ec-cart__checkout button.form-control__button');
+      if (btn) btn.click();
+    }, 300);
   }
-  // Hide intro text above the email input
-  document.querySelectorAll('.ec-cart__intro, .ec-page-title + p').forEach(function(el) {
-    el.style.display = 'none';
-  });
-  // Hide the done email summary row that appears after email step is passed
+  // Hide done email summary row
   document.querySelectorAll('.ec-cart-step--email.ec-cart-step--done').forEach(function(el) {
     el.style.display = 'none';
   });
