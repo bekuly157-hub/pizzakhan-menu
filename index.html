@@ -46,17 +46,10 @@
   .pay-note{font-size:11px;color:var(--gray);margin-top:12px;line-height:1.5;}
   .pay-cash{font-size:15px;line-height:1.7;}
   /* Hide checkout fields we don't need */
-  .ec-form__cell--name,
-  #ec-full-name,
-  #ec-phone,
-  .ec-form__row:has(#ec-full-name),
-  .ec-form__row:has(#ec-phone) { display: none !important; }
-  /* Hide pickup tile and labels */
-  .ec-tabs, .ec-tabs__wrap,
-  .ec-cart-step__section-title,
+  .ec-form__cell--name { display: none !important; }
+  .ec-tabs { display: none !important; }
+  .ec-cart-step__section-title { display: none !important; }
   .ec-form__title { display: none !important; }
-  /* Hide "Введите свою контактную информацию" */
-  .ec-cart-step__section > p { display: none !important; }
 </style>
 </head>
 <body>
