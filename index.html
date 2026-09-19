@@ -196,6 +196,39 @@
     document.getElementById('payOv').classList.remove('open');
   });
 
+  // ── Checkout simplification helpers ──
+  var eDone=false, nDone=false;
+  function hE() {
+    var i=document.getElementById('ec-cart-email-input');
+    if(i && !eDone){
+      var s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+      s.call(i,'guest@pizzakhan.local');
+      i.dispatchEvent(new Event('input',{bubbles:true}));
+      i.dispatchEvent(new Event('change',{bubbles:true}));
+      eDone=true;
+    }
+    document.querySelectorAll('.ec-cart-step--email,.ec-cart__email,.ec-cart-email').forEach(function(el){el.style.display='none';});
+  }
+  function hN() {
+    var i=document.getElementById('ec-full-name');
+    if(!i||nDone)return;
+    var s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+    s.call(i,'Гость QR-меню');
+    i.dispatchEvent(new Event('input',{bubbles:true}));
+    i.dispatchEvent(new Event('change',{bubbles:true}));
+    nDone=true;
+    var c=i.closest('.ec-form__cell--name');
+    if(c)c.style.display='none';
+  }
+  function sim() {
+    var h=document.querySelector('.ec-cart-next__header');
+    if(h)h.style.display='none';
+    document.querySelectorAll('.ec-cart-step--empty,.ec-cart-step--done,.ec-cart-step__section--description').forEach(function(e){e.style.display='none';});
+    document.querySelectorAll('.ec-tabs__tab').forEach(function(t){if(t.textContent.trim()==='Доставка по адресу')t.style.display='none';});
+    document.querySelectorAll('.form-control__button-text').forEach(function(s){if(s.textContent.trim()==='Разместить заказ')s.textContent='Готовить!';});
+  }
+  new MutationObserver(function(){hE();hN();sim();}).observe(document.body,{childList:true,subtree:true});
+
   window.Ecwid = window.Ecwid || [];
   Ecwid.OnAPILoaded.add(function() {
     ecwidReady = true;
@@ -203,6 +236,27 @@
       Ecwid.openPage('category', {id: pendingCatId});
       pendingCatId = null;
     }
+
+    // Auto-switch between home grid and store based on Ecwid page
+    Ecwid.OnPageLoaded.add(function(page) {
+      var cartPages = ['CART', 'CHECKOUT_ADDRESS', 'CHECKOUT_DELIVERY', 'CHECKOUT_PAYMENT', 'ORDER_CONFIRMATION'];
+      var isCart = cartPages.indexOf(page.type) !== -1 || page.type === 'PRODUCT' || page.type === 'CATEGORY';
+      if (isCart) {
+        document.getElementById('khanHome').style.display = 'none';
+        document.getElementById('khanStore').style.display = 'block';
+      } else if (page.type === 'MAIN_PAGE') {
+        document.getElementById('khanHome').style.display = 'block';
+        document.getElementById('khanStore').style.display = 'none';
+      }
+      setTimeout(function(){ hE(); hN(); sim(); }, 150);
+      setTimeout(function(){ hE(); hN(); sim(); }, 600);
+    });
+        document.getElementById('khanStore').style.display = 'none';
+      }
+      setTimeout(function(){ hE(); hN(); sim(); }, 100);
+      setTimeout(function(){ hE(); hN(); sim(); }, 600);
+    });
+
     Ecwid.OnOrderPlaced.add(function(order) {
       var total = (order && (order.total || order.subtotal)) || '';
       var no = (order && (order.orderNumber || order.vendorOrderNumber)) || '';
@@ -224,72 +278,6 @@
       window.scrollTo(0,0);
     });
   });
-
-  (function() {
-    var eDone=false, nDone=false;
-
-    function hE() {
-      // Hide email step — works on the cart page
-      var i=document.getElementById('ec-cart-email-input');
-      if(i && !eDone){
-        var s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
-        s.call(i,'guest@pizzakhan.local');
-        i.dispatchEvent(new Event('input',{bubbles:true}));
-        i.dispatchEvent(new Event('change',{bubbles:true}));
-        eDone=true;
-        var b=i.closest('.ec-cart__email,.ec-cart-email');
-        if(b)b.style.display='none';
-      }
-      // Also hide the whole email step block if it appears as a "done" row
-      document.querySelectorAll('.ec-cart-step--email').forEach(function(el){
-        el.style.display='none';
-      });
-      // Hide the email intro text that appears above the button
-      document.querySelectorAll('.ec-cart__email, .ec-cart-email').forEach(function(el){
-        el.style.display='none';
-      });
-    }
-
-    function hN() {
-      var i=document.getElementById('ec-full-name');
-      if(!i||nDone)return;
-      var s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
-      s.call(i,'Гость QR-меню');
-      i.dispatchEvent(new Event('input',{bubbles:true}));
-      i.dispatchEvent(new Event('change',{bubbles:true}));
-      nDone=true;
-      var c=i.closest('.ec-form__cell--name');
-      if(c)c.style.display='none';
-    }
-
-    function sim() {
-      // Hide "Далее" upcoming steps block
-      var h=document.querySelector('.ec-cart-next__header');
-      if(h)h.style.display='none';
-      // Hide empty/done steps and address description
-      document.querySelectorAll('.ec-cart-step--empty,.ec-cart-step--done,.ec-cart-step__section--description').forEach(function(e){e.style.display='none';});
-      // Hide "Доставка по адресу" tab
-      document.querySelectorAll('.ec-tabs__tab').forEach(function(t){
-        if(t.textContent.trim()==='Доставка по адресу')t.style.display='none';
-      });
-      // Rename submit button
-      document.querySelectorAll('.form-control__button-text').forEach(function(s){
-        if(s.textContent.trim()==='Разместить заказ')s.textContent='Готовить!';
-      });
-    }
-
-    // Start observer immediately
-    new MutationObserver(function(){hE();hN();sim();}).observe(document.body,{childList:true,subtree:true});
-
-    // Also hook into Ecwid page changes for reliability
-    window.Ecwid = window.Ecwid || [];
-    Ecwid.OnAPILoaded.add(function(){
-      Ecwid.OnPageLoaded.add(function(){
-        setTimeout(function(){ hE(); hN(); sim(); }, 100);
-        setTimeout(function(){ hE(); hN(); sim(); }, 500);
-      });
-    });
-  })();
 </script>
 </body>
 </html>
