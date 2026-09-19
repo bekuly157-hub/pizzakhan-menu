@@ -4,449 +4,261 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Pizza Khan — Меню</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --black: #14120F;
-    --graphite: #4A4640;
     --paper: #FFFFFF;
-    --paper-dim: #FAF9F6;
     --line: #EBE7DE;
     --bronze: #B8892B;
     --bronze-dim: #8C6A22;
+    --gray: #6B6560;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--paper); color: var(--black); font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+
+  /* ── Header ── */
+  .kh { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid var(--line); text-align: center; padding: 12px 16px 10px; }
+  .kh-back { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--bronze); background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 8px; }
+  .kh-logo { font-size: 20px; font-weight: 900; letter-spacing: 1px; color: var(--black); }
+  .kh-logo span { color: var(--bronze); }
+  .kh-sub { font-size: 10px; letter-spacing: 2.5px; color: var(--bronze-dim); font-weight: 600; margin-top: 2px; }
+  .kh-pills { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  .kh-pill { font-size: 11px; color: var(--gray); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; background: #faf9f6; }
+
+  /* ── Category grid (home screen) ── */
+  #khanHome { padding: 14px 12px 32px; }
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cat-card {
+    position: relative; border-radius: 14px; overflow: hidden;
+    aspect-ratio: 1 / 1; cursor: pointer; background: #e8e4dc;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    transition: transform .15s, box-shadow .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cat-card:active { transform: scale(.97); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  .cat-card img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block; transition: transform .3s;
+  }
+  .cat-card:active img { transform: scale(1.03); }
+  .cat-card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.65) 0%, rgba(0,0,0,.15) 55%, transparent 100%);
+  }
+  .cat-card-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 10px 12px;
+    font-size: 14px; font-weight: 800; color: #fff;
+    letter-spacing: .5px;
+    text-shadow: 0 1px 4px rgba(0,0,0,.5);
   }
 
-  * { box-sizing: border-box; }
+  /* ── Ecwid widget wrap ── */
+  #khanStore { display: none; padding: 0 0 40px; }
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--paper);
-    color: var(--black);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ---------- Header ---------- */
-  .khan-header {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    background: var(--paper);
-    border-bottom: 1px solid var(--line);
-    padding: 18px 20px 16px;
-    text-align: center;
-  }
-
-  .khan-crest {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 4px;
-  }
-
-  .khan-crest svg { width: 22px; height: 22px; flex-shrink: 0; }
-
-  .khan-title {
-    font-weight: 800;
-    font-size: 22px;
-    letter-spacing: 0.5px;
-    color: var(--black);
-    margin: 0;
-  }
-
-  .khan-title span { color: var(--bronze); }
-
-  .khan-tagline {
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--bronze-dim);
-    margin-top: 4px;
-    font-weight: 600;
-  }
-
-  /* ---------- Info strip (hall / self-pickup context) ---------- */
-  .khan-context {
-    max-width: 640px;
-    margin: 14px auto 0;
-    padding: 0 20px;
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .khan-pill {
-    font-size: 12.5px;
-    color: var(--graphite);
-    background: var(--paper-dim);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 6px 14px;
-  }
-
-  /* ---------- Widget mount area ---------- */
-  .khan-store-wrap {
-    max-width: 640px;
-    margin: 18px auto 40px;
-    padding: 0 12px;
-  }
-
-  #my-store-7841010 {
-    min-height: 60vh;
-  }
-
-  .khan-loading {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--bronze-dim);
-    font-size: 14px;
-  }
-
-  /* ---------- Footer ---------- */
-  .khan-footer {
-    text-align: center;
-    padding: 24px 20px 40px;
-    color: var(--graphite);
-    font-size: 11.5px;
-    letter-spacing: 0.5px;
-  }
-
-  .khan-footer a {
-    color: var(--bronze);
-    text-decoration: none;
-  }
-
-  .khan-back {
-    display: inline-block;
-    margin-bottom: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--bronze);
-    text-decoration: none;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
-    letter-spacing: 0.3px;
-  }
-  .khan-back:before { content: "← "; }
-
-  /* ---------- Post-order payment screen ---------- */
-  .khan-pay-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: var(--paper);
-    overflow-y: auto;
-  }
-
-  .khan-pay-overlay.is-open { display: block; }
-
-  .khan-pay-inner {
-    max-width: 440px;
-    margin: 0 auto;
-    padding: 40px 24px 48px;
-    text-align: center;
-  }
-
-  .khan-pay-check {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 18px;
-  }
-
-  .khan-pay-title {
-    font-size: 20px;
-    font-weight: 800;
-    margin: 0 0 6px;
-  }
-
-  .khan-pay-sub {
-    font-size: 13.5px;
-    color: var(--graphite);
-    margin: 0 0 28px;
-    line-height: 1.5;
-  }
-
-  .khan-pay-sub b { color: var(--black); }
-
-  .khan-pay-card {
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 20px;
-  }
-
-  .khan-pay-amount {
-    font-size: 30px;
-    font-weight: 800;
-    margin: 0 0 4px;
-  }
-
-  .khan-pay-order-no {
-    font-size: 12.5px;
-    color: var(--bronze-dim);
-    letter-spacing: 0.5px;
-    margin: 0 0 18px;
-    font-weight: 600;
-  }
-
-  .khan-pay-qr {
-    width: 180px;
-    height: 180px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 8px;
-    margin: 0 auto 16px;
-    display: block;
-  }
-
-  .khan-pay-link {
-    display: inline-block;
-    background: var(--black);
-    color: var(--paper) !important;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 14px;
-    padding: 13px 26px;
-    border-radius: 10px;
-  }
-
-  .khan-pay-note {
-    font-size: 12px;
-    color: var(--graphite);
-    margin-top: 14px;
-    line-height: 1.5;
-  }
-
-  .khan-pay-cash {
-    font-size: 15px;
-    line-height: 1.6;
-    padding: 8px 0 4px;
-  }
-
-  .khan-pay-close {
-    margin-top: 28px;
-    background: none;
-    border: none;
-    color: var(--bronze-dim);
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: underline;
-    cursor: pointer;
-    padding: 8px;
-  }
+  /* ── Payment overlay ── */
+  .pay-ov { display: none; position: fixed; inset: 0; z-index: 100; background: #fff; overflow-y: auto; }
+  .pay-ov.open { display: block; }
+  .pay-inner { max-width: 400px; margin: 0 auto; padding: 48px 24px; text-align: center; }
+  .pay-check { width: 52px; height: 52px; margin: 0 auto 16px; }
+  .pay-title { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+  .pay-sub { font-size: 13px; color: var(--gray); line-height: 1.6; margin-bottom: 28px; }
+  .pay-card { border: 1px solid var(--line); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+  .pay-amount { font-size: 34px; font-weight: 900; margin-bottom: 4px; }
+  .pay-no { font-size: 12px; color: var(--bronze-dim); font-weight: 700; letter-spacing: .5px; margin-bottom: 20px; }
+  .pay-qr { width: 180px; height: 180px; border: 1px solid var(--line); border-radius: 12px; padding: 8px; margin: 0 auto 16px; display: block; }
+  .pay-btn { display: inline-block; background: var(--black); color: #fff !important; text-decoration: none; font-weight: 700; font-size: 15px; padding: 14px 28px; border-radius: 12px; }
+  .pay-note { font-size: 11px; color: var(--gray); margin-top: 12px; line-height: 1.5; }
+  .pay-cash { font-size: 15px; line-height: 1.7; }
+  .pay-back { margin-top: 28px; background: none; border: none; color: var(--bronze-dim); font-size: 13px; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 8px; }
 </style>
 </head>
 <body>
 
-  <!-- Post-order payment screen: shown after checkout via Ecwid.OnOrderPlaced -->
-  <div class="khan-pay-overlay" id="khanPayOverlay">
-    <div class="khan-pay-inner">
-      <svg class="khan-pay-check" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="22" stroke="#B8892B" stroke-width="1.6"/>
-        <path d="M15 24.5L21 30.5L33 17.5" stroke="#B8892B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <p class="khan-pay-title">Заказ принят</p>
-      <p class="khan-pay-sub">Уже передали его на кухню.<br>Осталось только оплатить.</p>
+<!-- Payment overlay -->
+<div class="pay-ov" id="payOv">
+  <div class="pay-inner">
+    <svg class="pay-check" viewBox="0 0 52 52" fill="none">
+      <circle cx="26" cy="26" r="24" stroke="#B8892B" stroke-width="1.5"/>
+      <path d="M16 26.5L22 32.5L36 18.5" stroke="#B8892B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p class="pay-title">Заказ принят!</p>
+    <p class="pay-sub">Уже передали на кухню.<br>Осталось оплатить.</p>
+    <div id="payKaspi" class="pay-card" style="display:none">
+      <p class="pay-amount" id="payAmt">—</p>
+      <p class="pay-no" id="payNo">ЗАКАЗ №—</p>
+      <img class="pay-qr" id="payQr" alt="QR">
+      <a class="pay-btn" id="payLink" href="#" target="_blank" rel="noopener">Открыть Kaspi Pay</a>
+      <p class="pay-note">Наведите камеру на QR или нажмите кнопку.</p>
+    </div>
+    <div id="payCash" class="pay-card" style="display:none">
+      <p class="pay-no" id="payCashNo">ЗАКАЗ №—</p>
+      <p class="pay-cash">Оплата наличными.<br>Сумма: <b id="payCashAmt">—</b></p>
+    </div>
+    <button class="pay-back" id="payBack">Вернуться в меню</button>
+  </div>
+</div>
 
-      <div id="khanPayKaspiBlock" class="khan-pay-card" style="display:none;">
-        <p class="khan-pay-amount" id="khanPayAmount">—</p>
-        <p class="khan-pay-order-no" id="khanPayOrderNo">ЗАКАЗ №—</p>
-        <img class="khan-pay-qr" id="khanPayQr" alt="QR для оплаты Kaspi">
-        <div>
-          <a class="khan-pay-link" id="khanPayLink" href="#" target="_blank" rel="noopener">Открыть Kaspi Pay</a>
-        </div>
-        <p class="khan-pay-note">Наведите камеру Kaspi.kz на QR или перейдите по ссылке.<br>В комментарии к платежу укажите номер заказа.</p>
-      </div>
+<!-- Header -->
+<header class="kh">
+  <button class="kh-back" id="backBtn">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="#B8892B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Вернуться в меню
+  </button>
+  <div class="kh-logo">PIZZA <span>KHAN</span></div>
+  <div class="kh-sub">НАҒЫЗ ЕТ · НАҒЫЗ ХАН</div>
+  <div class="kh-pills">
+    <span class="kh-pill">Самовывоз и зал</span>
+    <span class="kh-pill">Наличные или Kaspi</span>
+  </div>
+</header>
 
-      <div id="khanPayCashBlock" class="khan-pay-card" style="display:none;">
-        <p class="khan-pay-order-no" id="khanPayCashOrderNo">ЗАКАЗ №—</p>
-        <p class="khan-pay-cash">Оплата наличными при получении.<br>Сумма к оплате: <b id="khanPayCashAmount">—</b></p>
-      </div>
-
-      <button class="khan-pay-close" id="khanPayClose">Вернуться в меню</button>
+<!-- Category grid -->
+<div id="khanHome">
+  <div class="cat-grid">
+    <div class="cat-card" onclick="khanOpenCat(22415295,'ПИЦЦА')">
+      <img src="https://d2j6dbq0eux0bg.cloudfront.net/images/7841010/3034059084.jpg" alt="Пицца" loading="lazy">
+      <div class="cat-card-overlay"></div>
+      <div class="cat-card-label">ПИЦЦА</div>
+    </div>
+    <div class="cat-card" onclick="khanOpenCat(22415296,'ЗАКУСКИ')">
+      <img src="https://d2j6dbq0eux0bg.cloudfront.net/images/7841010/1237580693.jpg" alt="Закуски" loading="lazy">
+      <div class="cat-card-overlay"></div>
+      <div class="cat-card-label">ЗАКУСКИ</div>
+    </div>
+    <div class="cat-card" onclick="khanOpenCat(22989347,'БУРГЕР')">
+      <img src="https://d2j6dbq0eux0bg.cloudfront.net/images/7841010/1237580449.jpg" alt="Бургер" loading="lazy">
+      <div class="cat-card-overlay"></div>
+      <div class="cat-card-label">БУРГЕР</div>
+    </div>
+    <div class="cat-card" onclick="khanOpenCat(22989351,'КОМБО')">
+      <img src="https://d2j6dbq0eux0bg.cloudfront.net/images/7841010/1237581592.jpg" alt="Комбо наборы" loading="lazy">
+      <div class="cat-card-overlay"></div>
+      <div class="cat-card-label">КОМБО НАБОРЫ</div>
+    </div>
+    <div class="cat-card" onclick="khanOpenCat(39253334,'ДОНЕР')">
+      <img src="https://d2j6dbq0eux0bg.cloudfront.net/images/7841010/1172167275.jpg" alt="Донер" loading="lazy">
+      <div class="cat-card-overlay"></div>
+      <div class="cat-card-label">ДОНЕР</div>
+    </div>
+    <div class="cat-card" onclick="khanOpenCat(105581001,'КУРИЦА')">
+      <img src="https://d2j6dbq0eux0bg.cloudfront.net/images/7841010/2241145074.jpg" alt="Курица" loading="lazy">
+      <div class="cat-card-overlay"></div>
+      <div class="cat-card-label">КУРИЦА</div>
+    </div>
+    <div class="cat-card" onclick="khanOpenCat(22989354,'НАПИТКИ')" style="grid-column:1/-1; aspect-ratio:2/1;">
+      <img src="https://d2j6dbq0eux0bg.cloudfront.net/images/7841010/1237579959.jpg" alt="Напитки" loading="lazy">
+      <div class="cat-card-overlay"></div>
+      <div class="cat-card-label">НАПИТКИ</div>
     </div>
   </div>
+</div>
 
-  <header class="khan-header">
-    <button class="khan-back" id="khanBackBtn">Вернуться в меню</button>
-    <div class="khan-crest">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 20L20 3M3 3L20 20" stroke="#B8892B" stroke-width="1.4" stroke-linecap="round"/>
-        <circle cx="11.5" cy="11.5" r="9" stroke="#B8892B" stroke-width="1.2"/>
-      </svg>
-      <h1 class="khan-title">PIZZA <span>KHAN</span></h1>
-    </div>
-    <div class="khan-tagline">НАҒЫЗ ЕТ · НАҒЫЗ ХАН</div>
+<!-- Ecwid store -->
+<div id="khanStore">
+  <div id="my-store-7841010"></div>
+</div>
 
-    <div class="khan-context">
-      <span class="khan-pill">Самовывоз и зал</span>
-      <span class="khan-pill">Оплата: наличные или Kaspi</span>
-    </div>
-  </header>
+<script data-cfasync="false" src="https://app.ecwid.com/script.js?7841010&data_platform=code&data_date=2026-09-18" charset="utf-8"></script>
+<script>
+  var KASPI = "https://pay.kaspi.kz/pay/wg3sxkye";
+  var ecwidReady = false;
+  var pendingCatId = null;
 
-  <main class="khan-store-wrap">
-    <div id="my-store-7841010">
-      <div class="khan-loading">Загружаем меню…</div>
-    </div>
-  </main>
-
-  <footer class="khan-footer">
-    Атырау · <a href="https://wa.me/77071024265" target="_blank" rel="noopener">WhatsApp +7 707 102 42 65</a>
-  </footer>
-
-  <!-- Ecwid storefront widget -->
-  <script data-cfasync="false" type="text/javascript" src="https://app.ecwid.com/script.js?7841010&data_platform=code&data_date=2026-09-18" charset="utf-8"></script>
-  <script type="text/javascript">
-    xProductBrowser(
-      "categoriesPerRow=2",
-      "views=grid(20,3) list(60) table(60)",
-      "categoryView=grid",
-      "searchView=list",
-      "id=my-store-7841010"
-    );
-  </script>
-
-  <!-- Post-order payment screen logic -->
-  <script type="text/javascript">
-    // TODO(Болат): подставить свою реальную ссылку Kaspi Pay сюда
-    var KHAN_KASPI_LINK = "https://pay.kaspi.kz/pay/wg3sxkye";
-
-    function khanBuildQrUrl(link) {
-      return "https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=4&data=" + encodeURIComponent(link);
+  function khanOpenCat(catId) {
+    document.getElementById('khanHome').style.display = 'none';
+    document.getElementById('khanStore').style.display = 'block';
+    document.getElementById('backBtn').style.display = 'inline-flex';
+    window.scrollTo(0,0);
+    if (ecwidReady) {
+      Ecwid.openPage('category', {id: catId});
+    } else {
+      pendingCatId = catId;
+      if (!ecwidReady) {
+        xProductBrowser("categoriesPerRow=2","views=grid(20,3) list(60) table(60)","categoryView=grid","searchView=list","id=my-store-7841010");
+      }
     }
+  }
 
-    function khanShowPayScreen(order) {
-      var overlay = document.getElementById("khanPayOverlay");
-      var kaspiBlock = document.getElementById("khanPayKaspiBlock");
-      var cashBlock = document.getElementById("khanPayCashBlock");
+  function khanGoHome() {
+    document.getElementById('khanHome').style.display = 'block';
+    document.getElementById('khanStore').style.display = 'none';
+    window.scrollTo(0,0);
+  }
 
-      var total = (order && (order.total || order.subtotal)) || "";
-      var orderNo = (order && (order.orderNumber || order.vendorOrderNumber)) || "";
-      var paymentMethod = (order && order.paymentMethod) || "";
-      var isKaspi = /kaspi/i.test(paymentMethod);
-
-      if (isKaspi) {
-        document.getElementById("khanPayAmount").textContent = total ? (total + " ₸") : "";
-        document.getElementById("khanPayOrderNo").textContent = orderNo ? ("ЗАКАЗ №" + orderNo) : "";
-        document.getElementById("khanPayLink").href = KHAN_KASPI_LINK;
-        document.getElementById("khanPayQr").src = khanBuildQrUrl(KHAN_KASPI_LINK);
-        kaspiBlock.style.display = "block";
-        cashBlock.style.display = "none";
-      } else {
-        document.getElementById("khanPayCashOrderNo").textContent = orderNo ? ("ЗАКАЗ №" + orderNo) : "";
-        document.getElementById("khanPayCashAmount").textContent = total ? (total + " ₸") : "";
-        cashBlock.style.display = "block";
-        kaspiBlock.style.display = "none";
-      }
-
-      overlay.classList.add("is-open");
-      window.scrollTo(0, 0);
+  document.getElementById('backBtn').addEventListener('click', function() {
+    if (!document.getElementById('khanHome').style.display || document.getElementById('khanHome').style.display === 'none') {
+      khanGoHome();
     }
+  });
 
-    document.getElementById("khanBackBtn").addEventListener("click", function () {
-      if (window.Ecwid && Ecwid.openPage) {
-        Ecwid.openPage("category");
+  document.getElementById('payBack').addEventListener('click', function() {
+    document.getElementById('payOv').classList.remove('open');
+  });
+
+  window.Ecwid = window.Ecwid || [];
+  Ecwid.OnAPILoaded.add(function() {
+    ecwidReady = true;
+    if (pendingCatId) {
+      Ecwid.openPage('category', {id: pendingCatId});
+      pendingCatId = null;
+    }
+    Ecwid.OnOrderPlaced.add(function(order) {
+      var total = (order && (order.total || order.subtotal)) || '';
+      var no = (order && (order.orderNumber || order.vendorOrderNumber)) || '';
+      var pm = (order && order.paymentMethod) || '';
+      if (/kaspi/i.test(pm)) {
+        document.getElementById('payAmt').textContent = total ? total + ' ₸' : '';
+        document.getElementById('payNo').textContent = no ? 'ЗАКАЗ №' + no : '';
+        document.getElementById('payLink').href = KASPI;
+        document.getElementById('payQr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=4&data=' + encodeURIComponent(KASPI);
+        document.getElementById('payKaspi').style.display = 'block';
+        document.getElementById('payCash').style.display = 'none';
       } else {
-        window.location.hash = "!/";
+        document.getElementById('payCashNo').textContent = no ? 'ЗАКАЗ №' + no : '';
+        document.getElementById('payCashAmt').textContent = total ? total + ' ₸' : '';
+        document.getElementById('payCash').style.display = 'block';
+        document.getElementById('payKaspi').style.display = 'none';
       }
+      document.getElementById('payOv').classList.add('open');
+      window.scrollTo(0,0);
     });
+  });
 
-    document.getElementById("khanPayClose").addEventListener("click", function () {
-      document.getElementById("khanPayOverlay").classList.remove("is-open");
-    });
-
-    window.Ecwid = window.Ecwid || [];
-    Ecwid.OnAPILoaded.add(function () {
-      Ecwid.OnOrderPlaced.add(function (order) {
-        khanShowPayScreen(order);
-      });
-    });
-
-    // Simplify checkout for in-hall / QR use: hide "delivery" (this page only,
-    // does not touch Ecwid store settings — pizzaxan.kz keeps delivery),
-    // and quietly fill+hide the email prompt since walk-in guests don't need it.
-    (function () {
-      var khanEmailHandled = false;
-
-      function khanFillAndHideEmail() {
-        var input = document.getElementById("ec-cart-email-input");
-        if (!input || khanEmailHandled) return;
-        var nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-        nativeSetter.call(input, "guest@pizzakhan.local");
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-        input.dispatchEvent(new Event("change", { bubbles: true }));
-        khanEmailHandled = true;
-
-        // The "Оформить заказ" button lives in a separate sibling block
-        // (.ec-cart__checkout), so hiding this one leaves the button intact.
-        var emailBlock = input.closest(".ec-cart__email, .ec-cart-email");
-        if (emailBlock) emailBlock.style.display = "none";
-      }
-
-      var khanNameHandled = false;
-
-      function khanFillAndHideName() {
-        var input = document.getElementById("ec-full-name");
-        if (!input || khanNameHandled) return;
-        var nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-        nativeSetter.call(input, "Гость QR-меню");
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-        input.dispatchEvent(new Event("change", { bubbles: true }));
-        khanNameHandled = true;
-        var cell = input.closest(".ec-form__cell--name");
-        if (cell) cell.style.display = "none";
-      }
-
-      function khanHideDeliveryTab() {
-        document.querySelectorAll(".ec-tabs__tab").forEach(function (tab) {
-          if (tab.textContent.trim() === "Доставка по адресу") {
-            tab.style.display = "none";
-          }
-        });
-      }
-
-      function khanSimplifySteps() {
-        // "Далее" preview of upcoming steps
-        var nextHeader = document.querySelector(".ec-cart-next__header");
-        if (nextHeader) nextHeader.style.display = "none";
-        // Empty/upcoming steps
-        document.querySelectorAll(".ec-cart-step--empty").forEach(function (el) {
-          el.style.display = "none";
-        });
-        // Completed steps shown as summary rows (email, address, etc.)
-        document.querySelectorAll(".ec-cart-step--done").forEach(function (el) {
-          el.style.display = "none";
-        });
-        // "Где забрать заказ" address + schedule block inside pickup step
-        document.querySelectorAll(".ec-cart-step__section--description").forEach(function (el) {
-          el.style.display = "none";
-        });
-      }
-
-      function khanRelabelFinalButton() {
-        document.querySelectorAll(".form-control__button-text").forEach(function (span) {
-          if (span.textContent.trim() === "Разместить заказ") {
-            span.textContent = "Готовить!";
-          }
-        });
-      }
-
-      var khanObserver = new MutationObserver(function () {
-        khanFillAndHideEmail();
-        khanFillAndHideName();
-        khanHideDeliveryTab();
-        khanSimplifySteps();
-        khanRelabelFinalButton();
-      });
-      khanObserver.observe(document.body, { childList: true, subtree: true });
-    })();
-  </script>
-
+  (function() {
+    var eDone=false, nDone=false;
+    function hE() {
+      var i=document.getElementById('ec-cart-email-input');
+      if(!i||eDone)return;
+      var s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+      s.call(i,'guest@pizzakhan.local');
+      i.dispatchEvent(new Event('input',{bubbles:true}));
+      i.dispatchEvent(new Event('change',{bubbles:true}));
+      eDone=true;
+      var b=i.closest('.ec-cart__email,.ec-cart-email');
+      if(b)b.style.display='none';
+    }
+    function hN() {
+      var i=document.getElementById('ec-full-name');
+      if(!i||nDone)return;
+      var s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+      s.call(i,'Гость QR-меню');
+      i.dispatchEvent(new Event('input',{bubbles:true}));
+      i.dispatchEvent(new Event('change',{bubbles:true}));
+      nDone=true;
+      var c=i.closest('.ec-form__cell--name');
+      if(c)c.style.display='none';
+    }
+    function sim() {
+      var h=document.querySelector('.ec-cart-next__header');
+      if(h)h.style.display='none';
+      document.querySelectorAll('.ec-cart-step--empty,.ec-cart-step--done,.ec-cart-step__section--description').forEach(function(e){e.style.display='none';});
+      document.querySelectorAll('.ec-tabs__tab').forEach(function(t){if(t.textContent.trim()==='Доставка по адресу')t.style.display='none';});
+      document.querySelectorAll('.form-control__button-text').forEach(function(s){if(s.textContent.trim()==='Разместить заказ')s.textContent='Готовить!';});
+    }
+    new MutationObserver(function(){hE();hN();sim();}).observe(document.body,{childList:true,subtree:true});
+  })();
+</script>
 </body>
 </html>
