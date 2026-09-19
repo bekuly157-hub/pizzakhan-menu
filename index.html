@@ -287,10 +287,13 @@ function cleanupCheckout() {
     if (phoneRow) phoneRow.style.display = 'none';
   }
 
-  // 5. Hide clutter
-  document.querySelectorAll('.ec-cart-next__header, .ec-cart-step--empty, .ec-cart-step--done, .ec-cart-step__section--description').forEach(function(el) {
-    el.style.display = 'none';
-  });
+  // 5. Hide clutter — only specific elements, not the whole section
+  document.querySelectorAll('.ec-cart-next__header').forEach(function(el) { el.style.display = 'none'; });
+  document.querySelectorAll('.ec-cart-step--empty').forEach(function(el) { el.style.display = 'none'; });
+  document.querySelectorAll('.ec-cart-step--done').forEach(function(el) { el.style.display = 'none'; });
+  document.querySelectorAll('.ec-cart-step__section--description').forEach(function(el) { el.style.display = 'none'; });
+  // Hide "Введите свою контактную информацию" text
+  document.querySelectorAll('.ec-form__title, .ec-cart-step__section-title').forEach(function(el) { el.style.display = 'none'; });
 
   // 6. Rename button
   document.querySelectorAll('.form-control__button-text').forEach(function(s) {
